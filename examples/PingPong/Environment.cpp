@@ -19,6 +19,6 @@
 
 void Environment::InitOnEntry()
 {
-    ServerId = CreateMachine<Server>("Server");
+    ServerId = CreateActor<Server>("Server");
     ClientId = CreateMachine<Client>("Client", std::make_unique<ConfigEvent>(ServerId));
 }

@@ -15,14 +15,12 @@
 #include "Server.h"
 #include "Events.h"
 
-void Server::InitOnEntry()
+void Server::HandleEvent(std::unique_ptr<Event> event)
 {
-    Raise(std::make_unique<LocalEvent>());
-}
-
-void Server::SendPong(std::unique_ptr<Event> e)
-{
-    PingEvent* payload = dynamic_cast<PingEvent*>(e.get());
-    auto clientId = payload->Id;
-    Send(*clientId, std::make_unique<PongEvent>());
+    Assert(event != nullptr, "Received a null event.");
+    if (PingEvent* payload = dynamic_cast<PingEvent*>(event.get()))
+    {
+        auto clientId = payload->Id;
+        Send(*clientId, std::make_unique<PongEvent>());
+    }
 }

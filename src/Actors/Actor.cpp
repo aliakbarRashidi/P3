@@ -15,6 +15,7 @@
 #include "P3/Actors/Actor.h"
 #include "P3/Actors/ActorId.h"
 #include "P3/Runtime.h"
+#include <iostream>
 #include <memory>
 
 using namespace Microsoft::P3;
@@ -25,9 +26,39 @@ Actor::Actor()
     m_isHalted = false;
 }
 
+void Actor::Send(const ActorId& target, std::unique_ptr<Event> event)
+{
+    // If the event is null, then report an error.
+    Runtime->Assert(event != nullptr, "Cannot send a null event.");
+    Runtime->SendEvent(target, std::move(event), m_id.get());
+}
+
 void Actor::InvokeMonitor(std::string name, std::unique_ptr<Event> event)
 {
     Runtime->InvokeMonitor(name, move(event));
+}
+
+void Actor::Assert(bool predicate)
+{
+    if (!predicate)
+    {
+        Runtime->Assert(predicate);
+    }
+}
+
+void Actor::Assert(bool predicate, const std::string& message)
+{
+    Runtime->Assert(predicate, message);
+}
+
+void Actor::Assert(bool predicate, std::ostringstream& stream)
+{
+    Runtime->Assert(predicate, stream);
+}
+
+const ActorId* Actor::GetId()
+{
+    return m_id.get();
 }
 
 // Enqueues an asynchronous event to an actor.
@@ -41,7 +72,7 @@ void Actor::Enqueue(std::unique_ptr<Event> event, bool& runNewHandler)
         // If the actor has halted, do nothing.
         return;
     }
-
+    
     Runtime->Log("<EnqueueLog> '" + m_id->m_name + "' enqueued event '" + event->m_name + "'.");
 
     // Inserts the event into the inbox queue.
@@ -71,8 +102,11 @@ std::unique_ptr<Event> Actor::GetNextEvent()
 // Starts the actor with the specified event.
 void Actor::Start(std::unique_ptr<Event> event)
 {
-    bool ignore;
-    Enqueue(move(event), ignore);
+    if (event)
+    {
+        bool ignore;
+        Enqueue(move(event), ignore);
+    }
 }
 
 // Runs the event handler. The handler terminates if there is

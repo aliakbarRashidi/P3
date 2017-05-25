@@ -16,26 +16,14 @@
 #define MICROSOFT_P3_EXAMPLES_PINGPONG_SERVER_H
 
 #include "P3/Event.h"
-#include "P3/Actors/Machine.h"
+#include "P3/Actors/Actor.h"
 
 using namespace Microsoft::P3;
 
-class Server : public Machine
+class Server : public Actor
 {
 protected:
-    void Initialize()
-    {
-        auto initState = AddState("Init", true);
-        initState->SetOnEntryAction(std::bind(&Server::InitOnEntry, this));
-        initState->SetOnEventGotoState("LocalEvent", "Active");
-
-        auto activeState = AddState("Active");
-        activeState->SetOnEventDoAction("PingEvent", std::bind(&Server::SendPong, this, std::placeholders::_1));
-    }
-
-private:
-    void InitOnEntry();
-    void SendPong(std::unique_ptr<Event> e);
+    void HandleEvent(std::unique_ptr<Event> event);
 };
 
 #endif // MICROSOFT_P3_EXAMPLES_PINGPONG_SERVER_H

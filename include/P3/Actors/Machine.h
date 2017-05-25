@@ -48,30 +48,8 @@ namespace Microsoft { namespace P3
         // Initializes the state machine.
         virtual void Initialize() = 0;
 
-        // Creates a new machine of the specified type.
-        template<typename T>
-        const ActorId* CreateMachine(std::string name, std::unique_ptr<Event> event = nullptr)
-        {
-            return Runtime->CreateMachine<T>(name, move(event));
-        }
-
-        // Sends an asynchronous event to the target machine.
-        void Send(const ActorId& target, std::unique_ptr<Event> event);
-
         // Raises an event internally at the end of the current action.
         void Raise(std::unique_ptr<Event> event);
-
-        // Checks if the assertion holds, and if not it throws an exception.
-        void Assert(bool predicate);
-
-        // Checks if the assertion holds, and if not it throws an exception.
-        void Assert(bool predicate, const std::string& message);
-
-        // Checks if the assertion holds, and if not it throws an exception.
-        void Assert(bool predicate, std::ostringstream& stream);
-
-        // Returns the unique id of this machine.
-        const ActorId* GetId();
 
         // Returns the current machine state.
         std::string GetCurrentState();

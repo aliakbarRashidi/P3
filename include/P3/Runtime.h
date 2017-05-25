@@ -17,6 +17,7 @@
 
 #include "Configuration.h"
 #include "Event.h"
+#include "Actors/Actor.h"
 #include "Actors/Machine.h"
 #include "Actors/Monitor.h"
 #include <memory>
@@ -30,6 +31,7 @@ namespace Microsoft { namespace P3
     // Runtime for executing actors.
     class Runtime
     {
+        friend class Actor;
         friend class Machine;
         friend class Monitor;
         friend class ActorId;

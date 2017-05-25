@@ -30,42 +30,12 @@ Machine::Machine()
     m_isHalted = false;
 }
 
-void Machine::Send(const ActorId& target, std::unique_ptr<Event> event)
-{
-    // If the event is null, then report an error.
-    Runtime->Assert(event != nullptr, "Cannot send a null event.");
-    Runtime->SendEvent(target, std::move(event), m_id.get());
-}
-
 void Machine::Raise(std::unique_ptr<Event> event)
 {
     // If the event is null, then report an error.
     Runtime->Assert(event != nullptr, "Cannot send a null event.");
     m_raisedEvent = move(event);
     Runtime->NotifyRaisedEvent(*this, *(m_raisedEvent.get()));
-}
-
-void Machine::Assert(bool predicate)
-{
-    if (!predicate)
-    {
-        Runtime->Assert(predicate);
-    }
-}
-
-void Machine::Assert(bool predicate, const std::string& message)
-{
-    Runtime->Assert(predicate, message);
-}
-
-void Machine::Assert(bool predicate, std::ostringstream& stream)
-{
-    Runtime->Assert(predicate, stream);
-}
-
-const ActorId* Machine::GetId()
-{
-    return m_id.get();
 }
 
 // Gets the next available event. It gives priority to raised events, else deqeues

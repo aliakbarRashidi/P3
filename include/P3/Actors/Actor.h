@@ -45,11 +45,40 @@ namespace Microsoft { namespace P3
 
         Actor();
 
+        // Creates a new actor of the specified type.
+        template<typename T>
+        const ActorId* CreateActor(std::string name, std::unique_ptr<Event> event = nullptr)
+        {
+            return Runtime->CreateActor<T>(name, move(event));
+        }
+
+        // Creates a new machine of the specified type.
+        template<typename T>
+        const ActorId* CreateMachine(std::string name, std::unique_ptr<Event> event = nullptr)
+        {
+            return Runtime->CreateMachine<T>(name, move(event));
+        }
+
+        // Sends an asynchronous event to the target.
+        void Send(const ActorId& target, std::unique_ptr<Event> event);
+        
+        // Invokes the monitor with the specified name.
+        void InvokeMonitor(std::string name, std::unique_ptr<Event> event);
+
+        // Checks if the assertion holds, and if not it throws an exception.
+        void Assert(bool predicate);
+
+        // Checks if the assertion holds, and if not it throws an exception.
+        void Assert(bool predicate, const std::string& message);
+
+        // Checks if the assertion holds, and if not it throws an exception.
+        void Assert(bool predicate, std::ostringstream& stream);
+
         // Handles the specified event.
         virtual void HandleEvent(std::unique_ptr<Event> event) = 0;
 
-        // Invokes the monitor with the specified name.
-        void InvokeMonitor(std::string name, std::unique_ptr<Event> event);
+        // Returns the unique actor id.
+        const ActorId* GetId();
 
     private:
         // The unique id.
