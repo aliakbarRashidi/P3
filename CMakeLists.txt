@@ -49,3 +49,16 @@ add_executable(PingPong
 )
 
 target_link_libraries(PingPong P3)
+
+
+
+install(TARGETS P3 
+    DESTINATION lib
+)
+
+# Hack to also copy pdb file, if it exists.
+if(WIN32)
+    install(FILES $<TARGET_FILE_DIR:P3>/P3.pdb DESTINATION lib OPTIONAL)
+endif()
+
+install(DIRECTORY include DESTINATION .)
