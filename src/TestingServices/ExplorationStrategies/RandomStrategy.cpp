@@ -21,7 +21,7 @@ TestingServices::RandomStrategy::RandomStrategy()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(std::mt19937::min(), std::mt19937::max());
+    std::uniform_int_distribution<unsigned int> dis(std::mt19937::min(), std::mt19937::max());
     m_seed = dis(gen);
     m_generator.seed(m_seed);
 }
@@ -43,7 +43,7 @@ bool TestingServices::RandomStrategy::TryGetNext(ActorInfo*& next,
         return false;
     }
 
-    std::uniform_int_distribution<> dis(0, enabled.size());
+    std::uniform_int_distribution<unsigned int> dis(0, enabled.size() - 1);
     next = enabled[dis(m_generator)];
 
     return true;
