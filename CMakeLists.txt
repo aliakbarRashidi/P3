@@ -50,7 +50,13 @@ add_executable(PingPong
 
 target_link_libraries(PingPong P3)
 
-
+if(MSVC)
+    option(USE_RUNTIME_DLL "If on, the P3 static library will use MSVCRT[D].dll at runtime." ON)
+    if(NOT USE_RUNTIME_DLL)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    endif()
+endif()
 
 install(TARGETS P3 
     DESTINATION lib

@@ -5,7 +5,7 @@ set PROFILE=MSVC2017
 set Platform=x64
 set Toolset=v140
 set CMAKE_GENERATOR=Visual Studio 15 2017 Win64
-set CMAKE_OPTIONS=
+set CMAKE_OPTIONS=-DUSE_RUNTIME_DLL=ON
 
 set CMAKE_BUILD_TYPE=%Configuration%
 set BUILD_TRIPLE=%PROFILE%-%Platform%-%CMAKE_BUILD_TYPE%
