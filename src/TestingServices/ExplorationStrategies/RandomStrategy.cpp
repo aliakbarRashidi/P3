@@ -19,26 +19,32 @@ using namespace TestingServices;
 
 TestingServices::RandomStrategy::RandomStrategy()
 {
-    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(std::mt19937::min(), std::mt19937::max());
+    m_seed = dis(gen);
+    m_generator.seed(m_seed);
 }
 
 bool TestingServices::RandomStrategy::TryGetNext(ActorInfo*& next,
     std::vector<ActorInfo*> choices, ActorInfo& current)
 {
-    //TODO: use strategy.
+    std::vector<ActorInfo*> enabled;
     for (auto& p : choices)
     {
         if (p->IsEnabled)
         {
-            next = p;
-            break;
+            enabled.push_back(p);
         }
     }
 
-    if (next == nullptr)
+    if (enabled.empty())
     {
         return false;
     }
+
+    std::uniform_int_distribution<> dis(0, enabled.size());
+    next = enabled[dis(m_generator)];
 
     return true;
 }

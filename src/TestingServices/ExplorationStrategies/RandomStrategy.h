@@ -17,6 +17,7 @@
 
 #include "../IExplorationStrategy.h"
 #include <memory>
+#include <random>
 #include <vector>
 
 namespace Microsoft { namespace P3 { namespace TestingServices
@@ -35,6 +36,13 @@ namespace Microsoft { namespace P3 { namespace TestingServices
         bool GetNextBooleanChoice(int maxValue, bool& next);
             
     private:
+
+        // Seed used during this iteration.
+        unsigned int m_seed;
+
+        // Random integer generator.
+        std::mt19937 m_generator;
+
         // Copy is disabled.
         RandomStrategy(const RandomStrategy& that) = delete;
         RandomStrategy &operator=(RandomStrategy const &) = delete;
