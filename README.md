@@ -4,8 +4,5 @@ A C++ library and runtime for **building**, **systematically testing** and **deb
 ## How to build
 Install `cmake 3.8.1`. Then:
 ```
-mkdir build
-cd build
-cmake ..
-msbuild P3.sln
+.\build\build.cmd
 ```
