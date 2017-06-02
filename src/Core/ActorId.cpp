@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="JumpStateEvent.h">
+// <copyright file="ActorId.cpp">
 //      Copyright (c) Microsoft Corporation. All rights reserved.
 // 
 //      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -12,27 +12,24 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_EVENTS_JUMPSTATEEVENT_H
-#define MICROSOFT_P3_EVENTS_JUMPSTATEEVENT_H
-
-#include "P3/Event.h"
+#include "P3/ActorId.h"
+#include "P3/Runtime.h"
 #include <string>
 
-namespace Microsoft { namespace P3
+using namespace Microsoft::P3;
+
+ActorId::ActorId(std::string friendlyName, Runtime& runtime) :
+    m_runtime(&runtime),
+    m_value(runtime.GetNextId()),
+    m_name(friendlyName.empty() ? std::to_string(m_value) : (friendlyName + "(" + std::to_string(m_value) + ")"))
+{ }
+
+std::string ActorId::GetName() const
 {
-    // The jump state event.
-    class JumpStateEvent : public Event
-    {
-    public:
-        std::string StateName;
+    return m_name;
+}
 
-        JumpStateEvent(std::string stateName) :
-            Event("JumpStateEvent"),
-            StateName(stateName)
-        { }
-
-        ~JumpStateEvent() { }
-    };
-} }
-
-#endif // MICROSOFT_P3_EVENTS_JUMPSTATEEVENT_H
+const Runtime* ActorId::GetRuntime()
+{
+    return m_runtime;
+}

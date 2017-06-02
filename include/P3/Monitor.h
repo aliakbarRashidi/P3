@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_ACTORS_MONITOR_H
-#define MICROSOFT_P3_ACTORS_MONITOR_H
+#ifndef MICROSOFT_P3_MONITOR_H
+#define MICROSOFT_P3_MONITOR_H
 
 #include "Action.h"
 #include "MonitorState.h"
@@ -110,4 +110,4 @@ namespace Microsoft { namespace P3
 #pragma warning(pop)
 } }
 
-#endif // MICROSOFT_P3_ACTORS_MONITOR_H
+#endif // MICROSOFT_P3_MONITOR_H

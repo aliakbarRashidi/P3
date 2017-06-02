@@ -12,9 +12,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#include "P3/Actors/MachineState.h"
-#include "P3/Actors/Machine.h"
-#include "P3/Actors/ActorId.h"
+#include "P3/MachineState.h"
+#include "P3/Machine.h"
+#include "P3/ActorId.h"
 #include <string>
 
 using namespace Microsoft::P3;

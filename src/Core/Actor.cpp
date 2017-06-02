@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#include "P3/Actors/Actor.h"
-#include "P3/Actors/ActorId.h"
+#include "P3/Actor.h"
+#include "P3/ActorId.h"
 #include "P3/Runtime.h"
 #include <iostream>
 #include <memory>

@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_ACTORS_MACHINE_H
-#define MICROSOFT_P3_ACTORS_MACHINE_H
+#ifndef MICROSOFT_P3_MACHINE_H
+#define MICROSOFT_P3_MACHINE_H
 
 #include "Actor.h"
 #include "Action.h"
@@ -103,7 +103,7 @@ namespace Microsoft { namespace P3
 
         void Do(Action action, std::unique_ptr<Event> event);
         void PopState();
-        
+
         void DoStatePush(MachineState* state);
         void DoStatePop();
 
@@ -114,4 +114,4 @@ namespace Microsoft { namespace P3
 #pragma warning(pop)
 } }
 
-#endif // MICROSOFT_P3_ACTORS_MACHINE_H
+#endif // MICROSOFT_P3_MACHINE_H

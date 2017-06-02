@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_ACTORS_UNIQUEID_H
-#define MICROSOFT_P3_ACTORS_UNIQUEID_H
+#ifndef MICROSOFT_P3_ACTORID_H
+#define MICROSOFT_P3_ACTORID_H
 
 #include <string>
 
@@ -57,4 +57,4 @@ namespace Microsoft { namespace P3
     };
 } }
 
-#endif // MICROSOFT_P3_ACTORS_UNIQUEID_H
+#endif // MICROSOFT_P3_ACTORID_H

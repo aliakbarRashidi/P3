@@ -17,9 +17,9 @@
 
 #include "Configuration.h"
 #include "Event.h"
-#include "Actors/Actor.h"
-#include "Actors/Machine.h"
-#include "Actors/Monitor.h"
+#include "Actor.h"
+#include "Machine.h"
+#include "Monitor.h"
 #include <memory>
 #include <sstream>
 #include <string>

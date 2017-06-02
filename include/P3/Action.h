@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_ACTORS_ACTION_H
-#define MICROSOFT_P3_ACTORS_ACTION_H
+#ifndef MICROSOFT_P3_ACTION_H
+#define MICROSOFT_P3_ACTION_H
 
 #include <functional>
 #include <memory>
@@ -26,4 +26,4 @@ namespace Microsoft { namespace P3
     typedef std::function<void(std::unique_ptr<Event>)> Action;
 } }
 
-#endif // MICROSOFT_P3_ACTORS_ACTION_H
+#endif // MICROSOFT_P3_ACTION_H

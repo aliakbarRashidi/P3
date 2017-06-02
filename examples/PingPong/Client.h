@@ -16,7 +16,7 @@
 #define MICROSOFT_P3_EXAMPLES_PINGPONG_CLIENT_H
 
 #include "P3/Event.h"
-#include "P3/Actors/Machine.h"
+#include "P3/Machine.h"
 
 using namespace Microsoft::P3;
 

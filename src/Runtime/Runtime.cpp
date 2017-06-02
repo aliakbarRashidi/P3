@@ -14,8 +14,8 @@
 
 #include "ActorRuntime.h"
 #include "P3/Runtime.h"
-#include "P3/Actors/Machine.h"
-#include "P3/Actors/ActorId.h"
+#include "P3/Machine.h"
+#include "P3/ActorId.h"
 #include "P3/Runtime\AssertionFailureException.h"
 #include <iostream>
 #include <memory>

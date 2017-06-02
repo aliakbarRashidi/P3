@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="MonitorState.h">
+// <copyright file="MachineState.h">
 //      Copyright (c) Microsoft Corporation. All rights reserved.
 // 
 //      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_ACTORS_MONITORSTATE_H
-#define MICROSOFT_P3_ACTORS_MONITORSTATE_H
+#ifndef MICROSOFT_P3_MACHINESTATE_H
+#define MICROSOFT_P3_MACHINESTATE_H
 
 #include "Action.h"
 #include <map>
@@ -22,10 +22,10 @@
 
 namespace Microsoft { namespace P3
 {
-    // The state of a monitor machine.
-    class MonitorState final
+    // The state of a state-machine.
+    class MachineState final
     {
-        friend class Monitor;
+        friend class Machine;
         friend class ActorRuntime;
         friend class BugFindingRuntime;
 
@@ -36,15 +36,24 @@ namespace Microsoft { namespace P3
         // Sets the on-exit action for this state.
         void SetOnExitAction(Action onExit);
 
-        // Sets the goto state transition when the monitor receives the specified event in this state.
+        // Sets the goto state transition when the machine receives the specified event in this state.
         void SetOnEventGotoState(std::string event, std::string destination);
 
-        // Sets the action handler that is invoked when the monitor receives the specified event in this state.
+        // Sets the push state transition when the machine receives the specified event in this state.
+        void SetOnEventPushState(std::string event, std::string destination);
+
+        // Sets the action handler that is invoked when the machine receives the specified event in this state.
         void SetOnEventDoAction(std::string event, Action action);
 
+        // Sets an ignored event, that is dropped if dequeued while the machine is in this state.
+        void SetIgnoredEvent(std::string event);
+
+        // Sets a deferred event, that is skipped if dequeued while the machine is in this state.
+        void SetDeferredEvent(std::string event);
+
     private:
-        // Handler to the monitor that owns this state.
-        Monitor* m_monitor;
+        // Handler to the machine that owns this state.
+        Machine* _machine;
 
 #pragma warning(push)
 #pragma warning(disable: 4251)
@@ -60,18 +69,27 @@ namespace Microsoft { namespace P3
         // Map containing events to goto state transitions.
         std::map<std::string, std::string> m_gotoTransitions;
 
+        // Map containing events to push state transitions.
+        std::map<std::string, std::string> m_pushTransitions;
+
         // Map containing events to action bindings.
         std::map<std::string, Action> m_actionBindings;
+
+        // Set of ignored events.
+        std::set<std::string> m_ignoredEvents;
+
+        // Set of deferred events.
+        std::set<std::string> m_deferredEvents;
 #pragma warning(pop)
 
-        MonitorState(std::string name, Monitor& monitor);
+        MachineState(std::string name, Machine& machine);
 
         // Copy is disabled.
-        MonitorState(const MonitorState& that) = delete;
-        MonitorState &operator=(MonitorState const &) = delete;
+        MachineState(const MachineState& that) = delete;
+        MachineState &operator=(MachineState const &) = delete;
 
         void CheckPreviousDeclaration(std::string event);
     };
 } }
 
-#endif // MICROSOFT_P3_ACTORS_MONITORSTATE_H
+#endif // MICROSOFT_P3_MACHINESTATE_H

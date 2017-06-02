@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#include "P3/Actors/Monitor.h"
-#include "P3/Actors/MonitorState.h"
+#include "P3/Monitor.h"
+#include "P3/MonitorState.h"
 #include "P3/Runtime.h"
 #include <iostream>
 #include <memory>

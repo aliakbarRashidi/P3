@@ -15,7 +15,7 @@
 #ifndef MICROSOFT_P3_EXAMPLES_PINGPONG_ENVIRONMENT_H
 #define MICROSOFT_P3_EXAMPLES_PINGPONG_ENVIRONMENT_H
 
-#include "P3/Actors/Machine.h"
+#include "P3/Machine.h"
 
 using namespace Microsoft::P3;
 

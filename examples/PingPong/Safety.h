@@ -16,7 +16,7 @@
 #define MICROSOFT_P3_EXAMPLES_PINGPONG_SAFETY_H
 
 #include "P3/Event.h"
-#include "P3/Actors/Monitor.h"
+#include "P3/Monitor.h"
 
 using namespace Microsoft::P3;
 

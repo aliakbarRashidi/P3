@@ -16,7 +16,7 @@
 #define MICROSOFT_P3_EXAMPLES_PINGPONG_SERVER_H
 
 #include "P3/Event.h"
-#include "P3/Actors/Actor.h"
+#include "P3/Actor.h"
 
 using namespace Microsoft::P3;
 

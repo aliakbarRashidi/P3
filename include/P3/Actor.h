@@ -12,8 +12,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#ifndef MICROSOFT_P3_ACTORS_ACTOR_H
-#define MICROSOFT_P3_ACTORS_ACTOR_H
+#ifndef MICROSOFT_P3_ACTOR_H
+#define MICROSOFT_P3_ACTOR_H
 
 #include "P3/Event.h"
 #include <list>
@@ -122,4 +122,4 @@ namespace Microsoft { namespace P3
     };
 } }
 
-#endif // MICROSOFT_P3_ACTORS_ACTOR_H
+#endif // MICROSOFT_P3_ACTOR_H

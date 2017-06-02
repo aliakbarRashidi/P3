@@ -12,11 +12,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#include "P3/Actors/Machine.h"
-#include "P3/Actors/MachineState.h"
-#include "P3/Actors/ActorId.h"
+#include "P3/Machine.h"
+#include "P3/MachineState.h"
+#include "P3/ActorId.h"
 #include "P3/Runtime.h"
-#include "../Events/JumpStateEvent.h"
+#include "Events/JumpStateEvent.h"
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -298,6 +298,17 @@ void Machine::DoStatePush(MachineState* state)
 void Machine::DoStatePop()
 {
     m_stateStack.pop();
+
+    if (m_stateStack.empty())
+    {
+        m_gotoTransitions.clear();
+        m_pushTransitions.clear();
+    }
+    else
+    {
+        m_gotoTransitions = m_stateStack.top()->m_gotoTransitions;
+        m_pushTransitions = m_stateStack.top()->m_pushTransitions;
+    }
 }
 
 std::string Machine::GetCurrentState()
@@ -305,4 +316,8 @@ std::string Machine::GetCurrentState()
     return m_stateStack.top()->m_name;
 }
 
-Machine::~Machine() { }
+Machine::~Machine()
+{
+    m_gotoTransitions.clear();
+    m_pushTransitions.clear();
+}
