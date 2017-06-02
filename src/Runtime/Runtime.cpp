@@ -107,7 +107,7 @@ void Runtime::NotifyRaisedEvent(Monitor& monitor, Event& event)
 
 void Runtime::Log(const std::string& message)
 {
-    if (Config->EnableVerbosity)
+    if (Config->Verbosity)
     {
         std::cout << message << std::endl;
     }
@@ -115,7 +115,7 @@ void Runtime::Log(const std::string& message)
 
 void Runtime::Log(std::ostringstream& stream)
 {
-    if (Config->EnableVerbosity)
+    if (Config->Verbosity)
     {
         std::cout << stream.str() << std::endl;
     }

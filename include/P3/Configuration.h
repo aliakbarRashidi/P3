@@ -28,7 +28,7 @@ namespace Microsoft { namespace P3
 
     public:
         // Enables verbose output.
-        int EnableVerbosity;
+        int Verbosity;
 
         // Number of scheduling iterations.
         int SchedulingIterations;
