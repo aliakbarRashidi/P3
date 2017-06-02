@@ -1,5 +1,3 @@
-
-
 set Configuration=Debug
 set PROFILE=MSVC2017
 set Platform=x64
