@@ -149,6 +149,9 @@ namespace Microsoft { namespace P3
         // Notifies that a monitor raised an event.
         virtual void NotifyRaisedEvent(Monitor& monitor, Event& event);
 
+        // Notifies that a machine popped its state.
+        virtual void NotifyPoppedState(Machine& machine);
+
     private:
         // Monotonically increasing id counter.
         volatile long m_idCounter;

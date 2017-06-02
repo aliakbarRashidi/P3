@@ -50,7 +50,7 @@ void MachineState::SetOnEventGotoState(std::string event, std::string destinatio
 void MachineState::SetOnEventPushState(std::string event, std::string destination)
 {
     CheckPreviousDeclaration(event);
-    _pushTransitions[event] = destination;
+    m_pushTransitions[event] = destination;
 }
 
 void MachineState::SetOnEventDoAction(std::string event, Action action)
@@ -76,7 +76,7 @@ void MachineState::CheckPreviousDeclaration(std::string event)
 {
     _machine->Assert(m_gotoTransitions.find(event) == m_gotoTransitions.end(),
         "The '" + event + "' is already declared in a goto transition in state '" + m_name + "' of machine '" + _machine->m_id->m_name + "'.");
-    _machine->Assert(_pushTransitions.find(event) == _pushTransitions.end(),
+    _machine->Assert(m_pushTransitions.find(event) == m_pushTransitions.end(),
         "The '" + event + "' is already declared in a push transition in state '" + m_name + "' of machine '" + _machine->m_id->m_name + "'.");
     _machine->Assert(m_actionBindings.find(event) == m_actionBindings.end(),
         "The '" + event + "' is already declared in an action binding in state '" + m_name + "' of machine '" + _machine->m_id->m_name + "'.");

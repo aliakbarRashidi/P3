@@ -25,10 +25,10 @@ using namespace Microsoft::P3;
 
 Machine::Machine()
 {
-    m_currentState = nullptr;
     m_raisedEvent = nullptr;
     m_isRunning = true;
     m_isHalted = false;
+    m_isPopInvoked = false;
 }
 
 void Machine::Raise(std::unique_ptr<Event> event)
@@ -46,6 +46,12 @@ void Machine::Jump(std::string stateName)
         "' is not a state of machine '" + m_id->m_name + "'.");
     m_raisedEvent = std::make_unique<JumpStateEvent>(stateName);
     Runtime->NotifyRaisedEvent(*this, *(m_raisedEvent.get()));
+}
+
+void Machine::Pop()
+{
+    Runtime->NotifyPoppedState(*this);
+    m_isPopInvoked = true;
 }
 
 // Gets the next available event. It gives priority to raised events, else deqeues
@@ -123,6 +129,27 @@ void Machine::HandleEvent(std::unique_ptr<Event> event)
             auto handler = m_actionBindings[event->m_name];
             Do(handler, std::move(event));
         }
+        else
+        {
+            // The machine performs the on-exit action of the current state.
+            ExecuteCurrentStateOnExit();
+            if (m_isHalted)
+            {
+                return;
+            }
+
+            DoStatePop();
+
+            if (m_stateStack.empty())
+            {
+                Log("<PopLog> Machine '" + m_id->m_name + "' popped with unhandled event '" + event->m_name + "'.");
+            }
+            else
+            {
+                Log("<PopLog> Machine '" + m_id->m_name + "' popped with unhandled event '" + event->m_name +
+                    "' and reentered state '" + GetCurrentState() + "'.");
+            }
+        }
 
         break;
     }
@@ -132,15 +159,18 @@ void Machine::HandleEvent(std::unique_ptr<Event> event)
 // the start state, and executes the entry action, if there is any.
 void Machine::Start(std::unique_ptr<Event> event)
 {
-    Assert(m_currentState != nullptr,
-        "The start state for '" + m_id->m_name + "' has not been declared.");
-    DoStatePush(*(m_currentState));
+    Assert(!m_stateStack.empty(),
+        "The start state for machine '" + m_id->m_name + "' has not been declared.");
     ExecuteCurrentStateOnEntry(std::move(event));
 }
 
 // Performs a goto transition to the specified state.
 void Machine::GotoState(std::string state, std::unique_ptr<Event> event)
 {
+    // If the name does not correspond to an installed state, then report an error.
+    Runtime->Assert(m_states.find(state) != m_states.end(), "Trying to transition to state '" +
+        state + "', which is not a state of machine '" + m_id->m_name + "'.");
+
     // The machine performs the on-exit action of the current state.
     ExecuteCurrentStateOnExit();
     if (m_isHalted)
@@ -150,12 +180,9 @@ void Machine::GotoState(std::string state, std::unique_ptr<Event> event)
 
     DoStatePop();
 
-    // If the name does not correspond to an installed state, then report an error.
-    Runtime->Assert(m_states.find(state) != m_states.end(), "State '" + state + 
-        "' is not a state of machine '" + m_id->m_name + "'.");
+    auto nextState = m_states[state].get();
+    DoStatePush(nextState);
 
-    m_currentState = m_states[state].get();
-    DoStatePush(*(m_currentState));
     ExecuteCurrentStateOnEntry(std::move(event));
 }
 
@@ -165,13 +192,19 @@ void Machine::ExecuteCurrentStateOnEntry(std::unique_ptr<Event> event)
     // Notifies the runtime that the machine transitions to a new state.
     Runtime->NotifyEnteredState(*this);
 
-    Action entryAction = m_currentState->m_onEntryAction;
+    Action entryAction = m_stateStack.top()->m_onEntryAction;
 
     // Invokes the on-entry action of the new state, if there is one available.
     if (entryAction)
     {
         Runtime->NotifyInvokedAction(*this);
         entryAction(std::move(event));
+    }
+
+    // If the pop statement was invoked, then pop the current state.
+    if (m_isPopInvoked)
+    {
+        PopState();
     }
 }
 
@@ -181,7 +214,7 @@ void Machine::ExecuteCurrentStateOnExit()
     // Notifies the runtime that the machine exits the current state.
     Runtime->NotifyExitedState(*this);
 
-    Action exitAction = m_currentState->m_onExitAction;
+    Action exitAction = m_stateStack.top()->m_onExitAction;
 
     // Invokes the on-exit action of the current state, if there is one available.
     if (exitAction)
@@ -196,6 +229,12 @@ void Machine::Do(Action action, std::unique_ptr<Event> event)
 {
     Runtime->NotifyInvokedAction(*this);
     action(std::move(event));
+
+    // If the pop statement was invoked, then pop the current state.
+    if (m_isPopInvoked)
+    {
+        PopState();
+    }
 }
 
 MachineState* Machine::AddState(std::string name, bool isStart)
@@ -208,31 +247,62 @@ MachineState* Machine::AddState(std::string name, bool isStart)
 
     if (isStart)
     {
-        Assert(m_currentState == nullptr,
-            "The start state for '" + m_id->m_name + "' has already been set.");
-        m_currentState = m_states[name].get();
+        Assert(m_stateStack.empty(),
+            "The start state for machine '" + m_id->m_name + "' has already been set.");
+        auto startState = m_states[name].get();
+        DoStatePush(startState);
     }
 
     return m_states[name].get();
 }
 
-// Configures the state transitions of the machine when a state is pushed on to the stack.
-void Machine::DoStatePush(MachineState& state)
+// Performs a pop transition from the current state.
+void Machine::PopState()
 {
-    m_gotoTransitions = state.m_gotoTransitions;
-    _pushTransitions = state._pushTransitions;
-    m_actionBindings = state.m_actionBindings;
+    m_isPopInvoked = false;
+    
+    // The machine performs the on exit action of the current state.
+    ExecuteCurrentStateOnExit();
+    if (m_isHalted)
+    {
+        return;
+    }
+
+    DoStatePop();
+
+    if (m_stateStack.empty())
+    {
+        Log("<PopLog> Machine '" + m_id->m_name + "' popped.");
+    }
+    else
+    {
+        Log("<PopLog> Machine '" + m_id->m_name + "' popped and reentered state '" + GetCurrentState() + "'.");
+    }
+
+    // Watch out for an extra pop.
+    Assert(!m_stateStack.empty(),
+        "Machine '" + m_id->m_name + "' popped with no matching push.");
 }
 
-// Configures the state transitions of the machine when a state is popped.
+// Configures the state transitions of the machine when a state is pushed on to the stack.
+void Machine::DoStatePush(MachineState* state)
+{
+    m_gotoTransitions = state->m_gotoTransitions;
+    m_pushTransitions = state->m_pushTransitions;
+    m_actionBindings = state->m_actionBindings;
+
+    m_stateStack.push(state);
+}
+
+// Configures the state transitions of the machine when a state is poped from the stack.
 void Machine::DoStatePop()
 {
-
+    m_stateStack.pop();
 }
 
 std::string Machine::GetCurrentState()
 {
-    return m_currentState->m_name;
+    return m_stateStack.top()->m_name;
 }
 
 Machine::~Machine() { }

@@ -73,6 +73,9 @@ namespace Microsoft { namespace P3
         // Notifies that a machine raised an event.
         void NotifyRaisedEvent(Machine& machine, Event& event);
 
+        // Notifies that a machine popped its state.
+        void NotifyPoppedState(Machine& machine);
+
     private:
         // Map from unique ids to actor.
         std::unordered_map<long, std::unique_ptr<Actor>> m_actorMap;

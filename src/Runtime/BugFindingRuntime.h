@@ -92,6 +92,9 @@ namespace Microsoft { namespace P3
         // Notifies that a monitor raised an event.
         void NotifyRaisedEvent(Monitor& monitor, Event& event);
 
+        // Notifies that a machine popped its state.
+        void NotifyPoppedState(Machine& machine);
+
     private:
         // Map from unique ids to actors.
         std::unordered_map<long, std::unique_ptr<Actor>> m_actorMap;

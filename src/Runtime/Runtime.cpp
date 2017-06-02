@@ -105,6 +105,12 @@ void Runtime::NotifyRaisedEvent(Monitor& monitor, Event& event)
     // Override to implement the notification.
 }
 
+inline
+void Runtime::NotifyPoppedState(Machine& machine)
+{
+    // Override to implement the notification.
+}
+
 void Runtime::Log(const std::string& message)
 {
     if (Config->Verbosity)

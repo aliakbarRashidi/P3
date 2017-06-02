@@ -146,4 +146,10 @@ void ActorRuntime::NotifyRaisedEvent(Machine& machine, Event& event)
     Log("<RaiseLog> '" + machine.m_id->m_name + "' raised event '" + event.m_name + "'.");
 }
 
+inline
+void ActorRuntime::NotifyPoppedState(Machine& machine)
+{
+    Log("<PopLog> '" + machine.m_id->m_name + "' popped state '" + machine.GetCurrentState() + "'.");
+}
+
 ActorRuntime::~ActorRuntime() { }

@@ -222,6 +222,12 @@ void BugFindingRuntime::NotifyRaisedEvent(Monitor& monitor, Event& event)
     Log("<MonitorLog> '" + monitor.m_name + "' raised event '" + event.m_name + "'.");
 }
 
+inline
+void BugFindingRuntime::NotifyPoppedState(Machine& machine)
+{
+    Log("<PopLog> '" + machine.m_id->m_name + "' popped state '" + machine.GetCurrentState() + "'.");
+}
+
 BugFindingScheduler* BugFindingRuntime::GetScheduler()
 {
     return m_scheduler.get();

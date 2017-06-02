@@ -70,7 +70,7 @@ namespace Microsoft { namespace P3
         std::map<std::string, std::string> m_gotoTransitions;
 
         // Map containing events to push state transitions.
-        std::map<std::string, std::string> _pushTransitions;
+        std::map<std::string, std::string> m_pushTransitions;
 
         // Map containing events to action bindings.
         std::map<std::string, Action> m_actionBindings;

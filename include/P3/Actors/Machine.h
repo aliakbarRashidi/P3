@@ -23,6 +23,7 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <stack>
 #include <string>
 
 namespace Microsoft { namespace P3
@@ -55,6 +56,10 @@ namespace Microsoft { namespace P3
         // name at the end of the current action.
         void Jump(std::string stateName);
 
+        // Pops the current state from the machine state stack
+        // at the end of the current action.
+        void Pop();
+
         // Returns the current machine state.
         std::string GetCurrentState();
 
@@ -67,21 +72,23 @@ namespace Microsoft { namespace P3
         // Available states of this machine.
         std::map<std::string, std::unique_ptr<MachineState>> m_states;
 
-        // The currently installed machine state.
-        MachineState* m_currentState;
+        // Stack of currently installed machine states.
+        std::stack<MachineState*> m_stateStack;
 
         // Map containing events to goto state transitions for the currently installed state.
         std::map<std::string, std::string> m_gotoTransitions;
 
         // Map containing events to push state transitions for the currently installed state.
-        std::map<std::string, std::string> _pushTransitions;
+        std::map<std::string, std::string> m_pushTransitions;
 
         // Map containing events to action bindings for the currently installed state.
         std::map<std::string, Action> m_actionBindings;
+#pragma warning(pop)
 
         // Gets the raised event. If no event has been raised this will return null.
         std::unique_ptr<Event> m_raisedEvent;
-#pragma warning(pop)
+
+        bool m_isPopInvoked;
 
         std::unique_ptr<Event> GetNextEvent(bool& isDequeued);
         
@@ -95,8 +102,9 @@ namespace Microsoft { namespace P3
         void ExecuteCurrentStateOnExit();
 
         void Do(Action action, std::unique_ptr<Event> event);
-
-        void DoStatePush(MachineState& state);
+        void PopState();
+        
+        void DoStatePush(MachineState* state);
         void DoStatePop();
 
         // Copy is disabled.
