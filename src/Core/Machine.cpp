@@ -16,6 +16,7 @@
 #include "P3/MachineState.h"
 #include "P3/ActorId.h"
 #include "P3/Runtime.h"
+#include "Events/EventHandler.h"
 #include "Events/JumpStateEvent.h"
 #include <iostream>
 #include <memory>
@@ -62,15 +63,39 @@ std::unique_ptr<Event> Machine::GetNextEvent(bool& isDequeued)
     std::unique_ptr<Event> nextEvent = nullptr;
     if (m_raisedEvent)
     {
-        nextEvent = std::move(m_raisedEvent);
+        if (IsIgnored(m_raisedEvent->m_name))
+        {
+            m_raisedEvent = nullptr;
+        }
+        else
+        {
+            nextEvent = std::move(m_raisedEvent);
+        }
+
+        return nextEvent;
     }
 
     // If there is no raised event, then dequeue.
-    if (nextEvent == nullptr && m_inbox.size() > 0)
+    if (m_inbox.size() > 0)
     {
-        nextEvent = std::move(m_inbox.front());
-        m_inbox.pop_front();
-        isDequeued = true;
+        // Iterates through the events in the inbox.
+        for (auto i = m_inbox.begin(); i != m_inbox.end();)
+        {
+            if (IsIgnored((*i)->m_name))
+            {
+                i = m_inbox.erase(i);
+            }
+            else if (!IsDeferred((*i)->m_name))
+            {
+                nextEvent = std::move((*i));
+                i = m_inbox.erase(i);
+                isDequeued = true;
+            }
+            else
+            {
+                ++i;
+            }
+        }
     }
 
     return nextEvent;
@@ -114,44 +139,54 @@ void Machine::HandleEvent(std::unique_ptr<Event> event)
 {
     while (true)
     {
+        // If this is a jump state event, then transition to the target state.
         if (auto jumpStateEvent = dynamic_cast<JumpStateEvent*>(event.get()))
         {
             auto state = jumpStateEvent->StateName;
             GotoState(state, nullptr);
+            break;
         }
+
+        // If this is a goto transition, then transition to the target state.
         if (m_gotoTransitions.find(event->m_name) != m_gotoTransitions.end())
         {
             auto state = m_gotoTransitions[event->m_name];
             GotoState(state, std::move(event));
+            break;
         }
-        else if (m_actionBindings.find(event->m_name) != m_actionBindings.end())
+
+        if (!m_actionHandlerStack.empty())
         {
-            auto handler = m_actionBindings[event->m_name];
-            Do(handler, std::move(event));
+            auto actionHandlerMap = m_actionHandlerStack.top();
+            if (actionHandlerMap.find(event->m_name) != actionHandlerMap.end())
+            {
+                auto eventHandler = actionHandlerMap[event->m_name].get();
+                if (eventHandler->m_type == EventHandler::Type::Action)
+                {
+                    Do(eventHandler->m_action, std::move(event));
+                    break;
+                }
+            }
+        }
+        
+        // The machine performs the on-exit action of the current state.
+        ExecuteCurrentStateOnExit();
+        if (m_isHalted)
+        {
+            return;
+        }
+
+        DoStatePop();
+
+        if (m_stateStack.empty())
+        {
+            Log("<PopLog> Machine '" + m_id->m_name + "' popped with unhandled event '" + event->m_name + "'.");
         }
         else
         {
-            // The machine performs the on-exit action of the current state.
-            ExecuteCurrentStateOnExit();
-            if (m_isHalted)
-            {
-                return;
-            }
-
-            DoStatePop();
-
-            if (m_stateStack.empty())
-            {
-                Log("<PopLog> Machine '" + m_id->m_name + "' popped with unhandled event '" + event->m_name + "'.");
-            }
-            else
-            {
-                Log("<PopLog> Machine '" + m_id->m_name + "' popped with unhandled event '" + event->m_name +
-                    "' and reentered state '" + GetCurrentState() + "'.");
-            }
+            Log("<PopLog> Machine '" + m_id->m_name + "' popped with unhandled event '" + event->m_name +
+                "' and reentered state '" + GetCurrentState() + "'.");
         }
-
-        break;
     }
 }
 
@@ -289,15 +324,61 @@ void Machine::DoStatePush(MachineState* state)
 {
     m_gotoTransitions = state->m_gotoTransitions;
     m_pushTransitions = state->m_pushTransitions;
-    m_actionBindings = state->m_actionBindings;
+
+    // Gets existing map for actions.
+    std::map<std::string, std::shared_ptr<EventHandler>> eventHandlerMap;
+    if (!m_actionHandlerStack.empty())
+    {
+        auto currentEventHandlerMap = m_actionHandlerStack.top();
+        eventHandlerMap.insert(currentEventHandlerMap.begin(), currentEventHandlerMap.end());
+    }
+    
+    // Updates the map with defer handlers.
+    for (auto const& event : state->m_deferredEvents)
+    {
+        auto deferHandler = std::make_unique<EventHandler>();
+        deferHandler->m_type = EventHandler::Type::Defer;
+        eventHandlerMap[event] = std::move(deferHandler);
+    }
+
+    // Updates the map with action handlers.
+    for (auto const& event : state->m_actionBindings)
+    {
+        auto actionHandler = std::make_unique<EventHandler>();
+        actionHandler->m_type = EventHandler::Type::Action;
+        actionHandler->m_action = event.second;
+        eventHandlerMap[event.first] = std::move(actionHandler);
+    }
+
+    // Updates the map with ignore handlers.
+    for (auto const& event : state->m_ignoredEvents)
+    {
+        auto ignoreHandler = std::make_unique<EventHandler>();
+        ignoreHandler->m_type = EventHandler::Type::Ignore;
+        eventHandlerMap[event] = std::move(ignoreHandler);
+    }
+
+    // Removes the ones on which goto transitions are defined.
+    for (auto const& event : m_gotoTransitions)
+    {
+        eventHandlerMap.erase(event.first);
+    }
+
+    // Removes the ones on which push transitions are defined.
+    for (auto const& event : m_pushTransitions)
+    {
+        eventHandlerMap.erase(event.first);
+    }
 
     m_stateStack.push(state);
+    m_actionHandlerStack.push(eventHandlerMap);
 }
 
 // Configures the state transitions of the machine when a state is poped from the stack.
 void Machine::DoStatePop()
 {
     m_stateStack.pop();
+    m_actionHandlerStack.pop();
 
     if (m_stateStack.empty())
     {
@@ -309,6 +390,18 @@ void Machine::DoStatePop()
         m_gotoTransitions = m_stateStack.top()->m_gotoTransitions;
         m_pushTransitions = m_stateStack.top()->m_pushTransitions;
     }
+}
+
+// Checks if the machine ignores the specified event.
+bool Machine::IsIgnored(std::string event)
+{
+    return false;
+}
+
+// Checks if the machine defers the specified event.
+bool Machine::IsDeferred(std::string event)
+{
+    return false;
 }
 
 std::string Machine::GetCurrentState()

@@ -29,6 +29,7 @@
 namespace Microsoft { namespace P3
 {
     class ActorId;
+    class EventHandler;
 
 #pragma warning(push)
 #pragma warning(disable: 4275)
@@ -75,14 +76,16 @@ namespace Microsoft { namespace P3
         // Stack of currently installed machine states.
         std::stack<MachineState*> m_stateStack;
 
+        // A stack of maps that determine event handling action for each event type.
+        // These maps do not keep transition handlers. This stack has always the
+        // same height as m_stateStack.
+        std::stack<std::map<std::string, std::shared_ptr<EventHandler>>> m_actionHandlerStack;
+
         // Map containing events to goto state transitions for the currently installed state.
         std::map<std::string, std::string> m_gotoTransitions;
 
         // Map containing events to push state transitions for the currently installed state.
         std::map<std::string, std::string> m_pushTransitions;
-
-        // Map containing events to action bindings for the currently installed state.
-        std::map<std::string, Action> m_actionBindings;
 #pragma warning(pop)
 
         // Gets the raised event. If no event has been raised this will return null.
@@ -106,6 +109,9 @@ namespace Microsoft { namespace P3
 
         void DoStatePush(MachineState* state);
         void DoStatePop();
+
+        bool IsIgnored(std::string event);
+        bool IsDeferred(std::string event);
 
         // Copy is disabled.
         Machine(const Machine& that) = delete;
