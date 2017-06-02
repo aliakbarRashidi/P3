@@ -16,6 +16,7 @@
 #include "P3/Actors/MachineState.h"
 #include "P3/Actors/ActorId.h"
 #include "P3/Runtime.h"
+#include "../Events/JumpStateEvent.h"
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -33,8 +34,17 @@ Machine::Machine()
 void Machine::Raise(std::unique_ptr<Event> event)
 {
     // If the event is null, then report an error.
-    Runtime->Assert(event != nullptr, "Cannot send a null event.");
+    Runtime->Assert(event != nullptr, "Machine '" + m_id->m_name + "' raised a null event.");
     m_raisedEvent = move(event);
+    Runtime->NotifyRaisedEvent(*this, *(m_raisedEvent.get()));
+}
+
+void Machine::Jump(std::string stateName)
+{
+    // If the name does not correspond to an installed state, then report an error.
+    Runtime->Assert(m_states.find(stateName) != m_states.end(), "State '" + stateName + 
+        "' is not a state of machine '" + m_id->m_name + "'.");
+    m_raisedEvent = std::make_unique<JumpStateEvent>(stateName);
     Runtime->NotifyRaisedEvent(*this, *(m_raisedEvent.get()));
 }
 
@@ -98,6 +108,11 @@ void Machine::HandleEvent(std::unique_ptr<Event> event)
 {
     while (true)
     {
+        if (auto jumpStateEvent = dynamic_cast<JumpStateEvent*>(event.get()))
+        {
+            auto state = jumpStateEvent->StateName;
+            GotoState(state, nullptr);
+        }
         if (m_gotoTransitions.find(event->m_name) != m_gotoTransitions.end())
         {
             auto state = m_gotoTransitions[event->m_name];
@@ -134,6 +149,11 @@ void Machine::GotoState(std::string state, std::unique_ptr<Event> event)
     }
 
     DoStatePop();
+
+    // If the name does not correspond to an installed state, then report an error.
+    Runtime->Assert(m_states.find(state) != m_states.end(), "State '" + state + 
+        "' is not a state of machine '" + m_id->m_name + "'.");
+
     m_currentState = m_states[state].get();
     DoStatePush(*(m_currentState));
     ExecuteCurrentStateOnEntry(std::move(event));

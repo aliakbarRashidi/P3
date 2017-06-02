@@ -24,7 +24,8 @@ void Client::InitOnEntry(unique_ptr<Event> e)
     ConfigEvent* payload = dynamic_cast<ConfigEvent*>(e.get());
     _serverId = payload->Id;
     _counter = 0;
-    Raise(make_unique<LocalEvent>());
+    Jump("Active");
+    // Raise(make_unique<LocalEvent>());
 }
 
 void Client::ActiveOnEntry()

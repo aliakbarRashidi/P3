@@ -51,6 +51,10 @@ namespace Microsoft { namespace P3
         // Raises an event internally at the end of the current action.
         void Raise(std::unique_ptr<Event> event);
 
+        // Transitions the machine to the state with the specified
+        // name at the end of the current action.
+        void Jump(std::string stateName);
+
         // Returns the current machine state.
         std::string GetCurrentState();
 
