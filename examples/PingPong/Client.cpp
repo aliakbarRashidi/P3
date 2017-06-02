@@ -15,6 +15,7 @@
 #include "Client.h"
 #include "Events.h"
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -37,9 +38,11 @@ void Client::SendPing()
     // Assert(false, "test test");
     if (_counter < 5)
     {
-        cout << "=======================" << "." << endl;
-        cout << "=== sending ping #" << _counter << " ===." << endl;
-        cout << "=======================" << endl;
+        std::ostringstream message;
+        message << "=======================" << std::endl;
+        message << "=== sending ping #" << _counter << std::endl;
+        message << "=======================" << std::endl;
+        Log(message);
         Send(*(_serverId), make_unique<PingEvent>(GetId()));
         _counter++;
     }

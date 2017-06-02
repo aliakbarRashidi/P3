@@ -19,6 +19,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <sstream>
 #include <string>
 
 namespace Microsoft { namespace P3
@@ -64,6 +65,12 @@ namespace Microsoft { namespace P3
         
         // Invokes the monitor with the specified name.
         void InvokeMonitor(std::string name, std::unique_ptr<Event> event);
+
+        // Logs the specified message.
+        void Log(const std::string& message);
+
+        // Logs the specified message.
+        void Log(std::ostringstream& stream);
 
         // Checks if the assertion holds, and if not it throws an exception.
         void Assert(bool predicate);

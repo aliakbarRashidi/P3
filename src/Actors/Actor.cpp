@@ -38,6 +38,16 @@ void Actor::InvokeMonitor(std::string name, std::unique_ptr<Event> event)
     Runtime->InvokeMonitor(name, move(event));
 }
 
+void Actor::Log(const std::string& message)
+{
+    Runtime->Log(message);
+}
+
+void Actor::Log(std::ostringstream& stream)
+{
+    Runtime->Log(stream);
+}
+
 void Actor::Assert(bool predicate)
 {
     if (!predicate)

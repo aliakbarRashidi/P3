@@ -107,12 +107,18 @@ void Runtime::NotifyRaisedEvent(Monitor& monitor, Event& event)
 
 void Runtime::Log(const std::string& message)
 {
-    std::cout << message << std::endl;
+    if (Config->EnableVerbosity)
+    {
+        std::cout << message << std::endl;
+    }
 }
 
 void Runtime::Log(std::ostringstream& stream)
 {
-    std::cout << stream.str() << std::endl;
+    if (Config->EnableVerbosity)
+    {
+        std::cout << stream.str() << std::endl;
+    }
 }
 
 long Runtime::GetNextId()

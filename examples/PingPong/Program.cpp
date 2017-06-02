@@ -27,7 +27,8 @@ struct Test
     {
         // Create a new testing configuration.
         std::unique_ptr<Configuration> configuration(Configuration::Create());
-        configuration->SchedulingIterations = 100;
+        configuration->SchedulingIterations = 2;
+        configuration->EnableVerbosity = true;
 
         // Create a new instance of the P3 bug-finding engine.
         std::unique_ptr<BugFindingEngine> engine(BugFindingEngine::Create(
@@ -59,6 +60,7 @@ int main(int argc, char* argv[])
 
     // Create a new runtime configuration.
     std::unique_ptr<Configuration> configuration(Configuration::Create());
+    configuration->EnableVerbosity = true;
 
     // Create a new instance of the P3 runtime.
     std::unique_ptr<Runtime> runtime(Runtime::Create(move(configuration)));

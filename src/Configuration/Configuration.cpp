@@ -25,6 +25,7 @@ Configuration* Configuration::Create()
 Configuration* Configuration::CopyFrom(const Configuration& that)
 {
     auto copy = new Configuration();
+    copy->EnableVerbosity = that.EnableVerbosity;
     copy->SchedulingIterations = that.SchedulingIterations;
     copy->Strategy = that.Strategy;
     return copy;
@@ -32,6 +33,7 @@ Configuration* Configuration::CopyFrom(const Configuration& that)
 
 Configuration::Configuration()
 {
+    EnableVerbosity = false;
     SchedulingIterations = 1;
     Strategy = ExplorationStrategy::Random;
 }
