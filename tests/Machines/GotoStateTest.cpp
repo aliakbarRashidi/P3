@@ -38,12 +38,10 @@ private:
 
 TEST_CASE("State-machine is transitioning to state using 'jump'.", "[GotoStateTest]")
 {
-    auto configuration = Test::GetDefaultConfiguration();
-    // configuration->Verbosity = true;
-    
-    auto report = Test::Run(std::move(configuration), [](Runtime& runtime)
+    auto report = Test::Run(std::move(Test::GetDefaultConfiguration()), [](Runtime& runtime)
     {
         runtime.CreateMachine<M>("M");
     });
+
     REQUIRE(report->NumOfFoundBugs == 0);
 }
