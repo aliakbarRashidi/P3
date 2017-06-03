@@ -17,6 +17,7 @@
 
 #include "ActorInfo.h"
 #include "../IExplorationStrategy.h"
+#include "P3/Configuration.h"
 #include <future>
 #include <memory>
 #include <string>
@@ -38,7 +39,7 @@ namespace Microsoft { namespace P3 { namespace TestingServices
         // True if a bug was found.
         bool BugFound;
 
-        BugFindingScheduler(IExplorationStrategy* strategy);
+        BugFindingScheduler(Configuration* config, IExplorationStrategy* strategy);
         ~BugFindingScheduler();
 
         // Schedules the next machine to execute.
@@ -72,6 +73,9 @@ namespace Microsoft { namespace P3 { namespace TestingServices
         void Stop();
 
     private:
+        // The installed configuration.
+        Configuration* m_config;
+
         // The exploration strategy to be used for bug-finding.
         IExplorationStrategy* m_strategy;
 

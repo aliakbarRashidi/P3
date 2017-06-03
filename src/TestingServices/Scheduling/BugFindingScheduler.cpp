@@ -23,8 +23,9 @@ using namespace Microsoft::P3;
 using namespace TestingServices;
 
 // Creates a new runtime.
-TestingServices::BugFindingScheduler::BugFindingScheduler(IExplorationStrategy* strategy)
+TestingServices::BugFindingScheduler::BugFindingScheduler(Configuration* config, IExplorationStrategy* strategy)
 {
+    m_config = config;
     m_strategy = strategy;
     IsSchedulerRunning = true;
     HasFullyExploredSchedule = false;
@@ -52,7 +53,11 @@ void TestingServices::BugFindingScheduler::Schedule()
     ActorInfo* next = nullptr;
     if (!m_strategy->TryGetNext(next, GetProcessInfos(), *current))
     {
-        std::cout << "<ScheduleDebug> Schedule explored." << std::endl;
+        if (m_config->Verbosity)
+        {
+            std::cout << "<ScheduleLog> Schedule explored." << std::endl;
+        }
+        
         HasFullyExploredSchedule = true;
         Stop();
         return;

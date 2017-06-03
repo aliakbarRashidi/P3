@@ -26,6 +26,12 @@ namespace Microsoft { namespace P3 { namespace TestingServices
 
         TestReport();
         ~TestReport();
+
+        static TestReport* CopyFrom(const TestReport& that);
+
+    private:
+        TestReport(const TestReport& that) = delete;
+        TestReport &operator=(TestReport const &) = delete;
     };
 } } }
 

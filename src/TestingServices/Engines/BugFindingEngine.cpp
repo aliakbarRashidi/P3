@@ -17,6 +17,7 @@
 #include "../ExplorationStrategies/RandomStrategy.h"
 #include "../../Runtime/BugFindingRuntime.h"
 #include <iostream>
+#include <string>
 
 using namespace Microsoft::P3;
 using namespace TestingServices;
@@ -49,7 +50,7 @@ void TestingServices::BugFindingEngine::Initialize()
 
 void TestingServices::BugFindingEngine::Run()
 {
-    std::cout << ". Testing started" << std::endl;
+    Log(". Testing started");
 
     int maxIterations = m_configuration->SchedulingIterations;
     for (int i = 0; i < maxIterations; i++)
@@ -62,13 +63,13 @@ void TestingServices::BugFindingEngine::Run()
             break;
         }
     }
-
-    std::cout << ". Done" << std::endl;
+    
+    Log(". Done");
 }
 
 void TestingServices::BugFindingEngine::RunNextIteration(int iteration)
 {
-    std::cout << "... Iteration #" << (iteration + 1) << std::endl;
+    Log("... Iteration #" + std::to_string(iteration + 1));
 
     // Copy the configuration to pass it to the runtime.
     std::unique_ptr<Configuration> configuration(Configuration::CopyFrom(*(m_configuration.get())));
@@ -85,8 +86,21 @@ void TestingServices::BugFindingEngine::RunNextIteration(int iteration)
     if (runtime->GetScheduler()->BugFound)
     {
         m_report->NumOfFoundBugs++;
-        std::cout << "..... Iteration #" << (iteration + 1) <<
-            " triggered bug #" << m_report->NumOfFoundBugs << std::endl;
+        Log("..... Iteration #" + std::to_string(iteration + 1) + " triggered bug #" +
+            std::to_string(m_report->NumOfFoundBugs));
+    }
+}
+
+TestReport* TestingServices::BugFindingEngine::GetReport()
+{
+    return m_report.get();
+}
+
+void TestingServices::BugFindingEngine::Log(const std::string& message)
+{
+    if (m_configuration->ToolVerbosity)
+    {
+        std::cout << message << std::endl;
     }
 }
 

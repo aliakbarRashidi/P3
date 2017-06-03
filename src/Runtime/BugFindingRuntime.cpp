@@ -31,7 +31,7 @@ using namespace TestingServices;
 BugFindingRuntime::BugFindingRuntime(std::unique_ptr<Configuration> configuration, IExplorationStrategy* strategy)
     : Runtime(move(configuration))
 {
-    std::unique_ptr<BugFindingScheduler> scheduler(new BugFindingScheduler(strategy));
+    std::unique_ptr<BugFindingScheduler> scheduler(new BugFindingScheduler(Config.get(), strategy));
     m_scheduler = move(scheduler);
 }
 

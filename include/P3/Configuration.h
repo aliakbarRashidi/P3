@@ -27,8 +27,11 @@ namespace Microsoft { namespace P3
         friend class BugFindingRuntime;
 
     public:
-        // Enables verbose output.
-        int Verbosity;
+        // Enables verbose output during execution.
+        bool Verbosity;
+
+        // Enables verbose output in the tool.
+        bool ToolVerbosity;
 
         // Number of scheduling iterations.
         int SchedulingIterations;

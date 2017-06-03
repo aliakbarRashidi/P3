@@ -36,15 +36,14 @@ private:
     }
 };
 
-TEST_CASE("Machine is transitioning to new state", "[GotoStateTest]")
+TEST_CASE("State-machine is transitioning to state using 'jump'.", "[GotoStateTest]")
 {
-    std::unique_ptr<Microsoft::P3::Configuration> configuration(Microsoft::P3::Configuration::Create());
-    configuration->SchedulingIterations = 1;
+    auto configuration = Test::GetDefaultConfiguration();
     // configuration->Verbosity = true;
     
-    Test::Run(std::move(configuration), [](Runtime& runtime)
-        {
-            runtime.CreateMachine<M>("M");
-        });
-    // REQUIRE(1 == 1);
+    auto report = Test::Run(std::move(configuration), [](Runtime& runtime)
+    {
+        runtime.CreateMachine<M>("M");
+    });
+    REQUIRE(report->NumOfFoundBugs == 0);
 }

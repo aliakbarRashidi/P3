@@ -21,16 +21,23 @@
 
 struct Test
 {
-    static void Run(Microsoft::P3::TestingServices::TestAction testAction)
+    static std::unique_ptr<Microsoft::P3::Configuration> GetDefaultConfiguration()
     {
-        // Create a new testing configuration.
+        // Create the default testing configuration.
         std::unique_ptr<Microsoft::P3::Configuration> configuration(Microsoft::P3::Configuration::Create());
+        configuration->ToolVerbosity = false;
         configuration->SchedulingIterations = 1;
-
-        Run(std::move(configuration), testAction);
+        return configuration;
     }
 
-    static void Run(std::unique_ptr<Microsoft::P3::Configuration> configuration,
+    static std::unique_ptr<Microsoft::P3::TestingServices::TestReport> Run(
+        Microsoft::P3::TestingServices::TestAction testAction)
+    {
+        return Run(std::move(GetDefaultConfiguration()), testAction);
+    }
+
+    static std::unique_ptr<Microsoft::P3::TestingServices::TestReport> Run(
+        std::unique_ptr<Microsoft::P3::Configuration> configuration,
         Microsoft::P3::TestingServices::TestAction testAction)
     {
         // Create a new instance of the P3 bug-finding engine.
@@ -40,6 +47,9 @@ struct Test
         
         // Run the engine.
         engine->Run();
+        std::unique_ptr<Microsoft::P3::TestingServices::TestReport> report(
+            Microsoft::P3::TestingServices::TestReport::CopyFrom(*(engine->GetReport())));
+        return std::move(report);
     }
 };
 

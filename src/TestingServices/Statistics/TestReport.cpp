@@ -22,4 +22,11 @@ TestingServices::TestReport::TestReport()
     NumOfFoundBugs = 0;
 }
 
+TestReport* TestingServices::TestReport::CopyFrom(const TestReport& that)
+{
+    auto copy = new TestReport();
+    copy->NumOfFoundBugs = that.NumOfFoundBugs;
+    return copy;
+}
+
 TestingServices::TestReport::~TestReport() { }

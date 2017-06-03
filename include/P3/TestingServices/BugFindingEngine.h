@@ -38,6 +38,9 @@ namespace Microsoft { namespace P3 { namespace TestingServices
         // Runs the engine.
         void Run();
 
+        // Returns the generated test report.
+        TestReport* GetReport();
+
         ~BugFindingEngine();
 
     private:
@@ -57,6 +60,8 @@ namespace Microsoft { namespace P3 { namespace TestingServices
 
         void Initialize();        
         void RunNextIteration(int iteration);
+
+        void Log(const std::string& message);
 
         // Copy is disabled.
         BugFindingEngine(const BugFindingEngine& that) = delete;
