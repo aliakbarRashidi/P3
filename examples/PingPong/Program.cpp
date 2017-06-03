@@ -32,7 +32,7 @@ struct Test
 
         // Create a new instance of the P3 bug-finding engine.
         std::unique_ptr<BugFindingEngine> engine(BugFindingEngine::Create(
-            move(configuration),
+            std::move(configuration),
             [](Runtime& runtime)
         {
             // Create the environment (test harness) machine.

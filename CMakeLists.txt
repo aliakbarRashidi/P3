@@ -38,6 +38,19 @@ add_library(P3 STATIC
 )
 
 ################################################################################
+# Tests
+################################################################################
+add_library(TestFramework STATIC
+    tests/Test.cpp
+)
+
+add_executable(Tests
+    tests/Machines/GotoStateTest.cpp
+)
+
+target_link_libraries(Tests P3 TestFramework)
+
+################################################################################
 # Examples
 ################################################################################
 add_executable(PingPong

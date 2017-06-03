@@ -47,6 +47,7 @@ namespace Microsoft { namespace P3 { namespace TestingServices
         // The exploration strategy used during testing.
         std::unique_ptr<IExplorationStrategy> m_strategy;
 
+        // The test report.
         std::unique_ptr<TestReport> m_report;
         
         // The entry point to the test.
