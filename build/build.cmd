@@ -1,7 +1,7 @@
 set Configuration=Debug
 set PROFILE=MSVC2017
 set Platform=x64
-set Toolset=v140
+set Toolset=v141
 set CMAKE_GENERATOR=Visual Studio 15 2017 Win64
 set CMAKE_OPTIONS=-DUSE_RUNTIME_DLL=ON
 
