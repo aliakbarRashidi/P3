@@ -284,8 +284,7 @@ MachineState* Machine::AddState(std::string name, bool isStart)
     {
         Assert(m_stateStack.empty(),
             "The start state for machine '" + m_id->m_name + "' has already been set.");
-        auto startState = m_states[name].get();
-        DoStatePush(startState);
+        startState = name;
     }
 
     return m_states[name].get();

@@ -53,6 +53,7 @@ void ActorRuntime::InitializeMachine(Machine* machine, std::string name)
     m_actorMap[id->m_value] = std::unique_ptr<Actor>(machine);
     machine->SetActorId(move(id));
     machine->Initialize();
+    machine->DoStatePush(machine->m_states[machine->startState].get());
 }
 
 void ActorRuntime::InitializeMonitor(Monitor* monitor, std::string name)

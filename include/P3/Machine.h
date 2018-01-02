@@ -73,6 +73,9 @@ namespace Microsoft { namespace P3
         // Available states of this machine.
         std::map<std::string, std::unique_ptr<MachineState>> m_states;
 
+        // start state of the machine
+        std::string startState;
+
         // Stack of currently installed machine states.
         std::stack<MachineState*> m_stateStack;
 
