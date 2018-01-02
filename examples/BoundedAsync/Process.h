@@ -4,7 +4,7 @@
 #include "P3/Machine.h"
 #include "P3/MachineState.h"
 #include "P3/Actor.h"
-
+#include <iostream>
 
 using namespace Microsoft::P3;
 class Process: public Machine

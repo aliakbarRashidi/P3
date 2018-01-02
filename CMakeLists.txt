@@ -63,6 +63,15 @@ add_executable(PingPong
 
 target_link_libraries(PingPong P3)
 
+add_executable(BoundedAsync
+    examples/BoundedAsync/BoundedAsync.cpp
+    examples/BoundedAsync/Environment.cpp
+    examples/BoundedAsync/Process.cpp
+    examples/BoundedAsync/Scheduler.cpp
+)
+
+target_link_libraries(BoundedAsync P3)
+
 if(MSVC)
     option(USE_RUNTIME_DLL "If on, the P3 static library will use MSVCRT[D].dll at runtime." ON)
     if(NOT USE_RUNTIME_DLL)

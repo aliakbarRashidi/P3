@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Scheduler.h"
 #include "Events.h"
 #include "Process.h"
